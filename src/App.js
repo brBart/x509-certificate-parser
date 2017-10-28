@@ -12,19 +12,32 @@ let res = [];
 let col = 0;
 
 const recur = (obj, res, col) => {
-  const { asn1Type, preview, warning = '' } = obj;
+  let { asn1Type, preview, warning = '' } = obj;
   // console.log(obj.childs.length);
   // (obj.childs.length === 0) ? console.log(asn1Type, preview) : null;
   // (obj.childs.length === 0) ? console.log(preview) : null;
   // (obj.childs.length === 0) ? res.push(asn1Type +' '+preview + ' ' + (warning.d||'')  + ' ' + (warning.c||'')  + ' ' + (warning.w||'') ) : null;
+
+  (asn1Type === "OBJECT IDENTIFIER") ? asn1Type = "OID" : null;
   let path = col++;
-  let payload = asn1Type +' '+preview + ' ' + (warning.d||'')  + ' ' + (warning.c||'')  + ' ' + (warning.w||'');
+
+  let payload = <span><small className="text-muted">{asn1Type}</small> {preview} <small className="text-muted">{(warning.d||'')  + ' ' + (warning.c||'')  + ' ' + (warning.w||'')}</small></span>;
+
+  // let payload = <span><small className="text-muted">{}</small> {preview} <small className="text-muted">{(warning.d||'')  + ' ' + (warning.c||'')  + ' ' + (warning.w||'')}</small></span>;
+
+  // ((asn1Type === "SET") || (asn1Type === "SEQUENCE") || (asn1Type === "NULL") || (asn1Type === "OCTET STRING")) ? null : res.push( [path, payload] );
+
+  // ((asn1Type === "OID") || (asn1Type === "SET") || (asn1Type === "SEQUENCE") || (asn1Type === "NULL") || (asn1Type === "OCTET STRING")) ? null : res.push( [path, payload] );
+
   res.push( [path, payload] );
+
   (obj.childs.length > 0) ? obj.childs.map(subObj => recur(subObj, res, col)) : null;
   // return [ asn1Type, preview ]
   // console.log(res)
   return res
 }
+
+const space = (nb) => <small className="text-muted">{"\u00a0".repeat(5*nb)}</small>
 
 class App extends Component {
   render() {
@@ -32,8 +45,8 @@ class App extends Component {
       <div className="container">
         <hr/>
         <div>
-          {recur(certObj, res, col).map((ele,i)=>
-            <div key={i}>{ele}</div>
+          {recur(certObj, res, col).map((ele,i) =>
+            <div className="" key={i}>{space(ele[0])}{ele[1]}</div>
           )}
         </div>
 
